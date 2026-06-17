@@ -1,0 +1,19 @@
+{
+    "name": "GltfTexBake.Editor",
+    "rootNamespace": "GltfTexBake",
+    "references": [
+        "glTFast",
+        "Unity.Collections"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
