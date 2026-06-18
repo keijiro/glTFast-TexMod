@@ -56,12 +56,9 @@ namespace GltfTexBake
             CancellationToken cancellationToken)
         {
             var profile = ResolveProfile();
-            var wantMips = profile.mipmaps switch
-            {
-                MipmapMode.ForceOn => true,
-                MipmapMode.ForceOff => false,
-                _ => generateMipMaps
-            };
+
+            // Mipmaps are left to glTFast's request (no interference).
+            var wantMips = generateMipMaps;
 
             var bytes = data.ToArray();
             var hasAlpha = ImageFormatDetection.IsPng(bytes) && !linear; // JPEG never has alpha; linear maps drop alpha
@@ -77,9 +74,9 @@ namespace GltfTexBake
             int sw = src.width, sh = src.height;
             var longest = Mathf.Max(sw, sh);
 
-            var bake = profile.enabled && longest > profile.minSize;
+            var bake = profile.enabled;
             var doDownscale = bake && profile.maxSize > 0 && longest > profile.maxSize;
-            var doCompress = bake && profile.mode != CompressionMode.Uncompressed;
+            var doCompress = bake && profile.compression != Compression.None;
 
             // 2. Target size (rounded to a multiple of 4 when compressing).
             int tw = sw, th = sh;
@@ -120,12 +117,13 @@ namespace GltfTexBake
                 UnityEngine.Object.DestroyImmediate(src);
             }
 
-            // 4. GPU-compress (editor, high quality).
+            // 4. GPU-compress (editor). Format and quality are derived from the
+            //    standard TextureImporterCompression level.
             string formatLabel;
             if (doCompress)
             {
-                var format = SelectFormat(profile.mode, linear, hasAlpha);
-                EditorUtility.CompressTexture(dst, format, profile.quality);
+                var format = SelectFormat(profile.compression, hasAlpha);
+                EditorUtility.CompressTexture(dst, format, SelectQuality(profile.compression));
                 formatLabel = format.ToString();
             }
             else
@@ -134,7 +132,14 @@ namespace GltfTexBake
             }
             dst.Apply(false, !readable);
 
-            Debug.Log($"[GltfTexBake] {sw}x{sh}->{tw}x{th} {formatLabel} (linear={linear}, mips={wantMips})");
+            // Filtering. glTFast only applies the glTF sampler to "variant"
+            // textures (an image used by multiple samplers); for the common
+            // single-sampler case it leaves filterMode untouched, so setting it
+            // here survives.
+            if (profile.forceTrilinear)
+                dst.filterMode = FilterMode.Trilinear;
+
+            Debug.Log($"[GltfTexBake] {sw}x{sh}->{tw}x{th} {formatLabel} (linear={linear}, mips={wantMips}, trilinear={profile.forceTrilinear})");
 
             return Task.FromResult(new ImageResult(dst));
         }
@@ -157,14 +162,19 @@ namespace GltfTexBake
             }
         }
 
-        static TextureFormat SelectFormat(CompressionMode mode, bool linear, bool hasAlpha) => mode switch
+        // Map the compression level to a desktop BC format. High quality uses
+        // BC7; the others use DXT1/DXT5 depending on whether alpha is present.
+        static TextureFormat SelectFormat(Compression compression, bool hasAlpha) => compression switch
         {
-            CompressionMode.BC1 => TextureFormat.DXT1,
-            CompressionMode.BC3 => TextureFormat.DXT5,
-            CompressionMode.BC7 => TextureFormat.BC7,
-            // Auto: drop alpha for linear (normal/ORM) data; pick DXT5 only when
-            // the source actually carries alpha.
-            _ => linear ? TextureFormat.DXT1 : (hasAlpha ? TextureFormat.DXT5 : TextureFormat.DXT1)
+            Compression.HighQuality => TextureFormat.BC7,
+            _ => hasAlpha ? TextureFormat.DXT5 : TextureFormat.DXT1
+        };
+
+        static TextureCompressionQuality SelectQuality(Compression compression) => compression switch
+        {
+            Compression.LowQuality => TextureCompressionQuality.Fast,
+            Compression.HighQuality => TextureCompressionQuality.Best,
+            _ => TextureCompressionQuality.Normal
         };
 
         static int RoundToMultipleOf4(int v) => Mathf.Max(4, (v + 2) / 4 * 4);

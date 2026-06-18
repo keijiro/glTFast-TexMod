@@ -5,11 +5,14 @@ using UnityEngine;
 
 namespace GltfTexBake
 {
-    // How the final GPU texture format is chosen.
-    enum CompressionMode { Auto, BC1, BC3, BC7, Uncompressed }
-
-    // Whether to honor glTFast's mipmap request or force it.
-    enum MipmapMode { Follow, ForceOn, ForceOff }
+    // GPU compression level. Mirrors Unity's TextureImporterCompression levels
+    // but with the labels requested for this tool. Maps to a desktop BC format
+    // and compression quality in TextureBakeAddon.
+    //   None          -> uncompressed (RGBA32)
+    //   LowQuality    -> DXT1/DXT5, Fast quality
+    //   NormalQuality -> DXT1/DXT5, Normal quality
+    //   HighQuality   -> BC7, Best quality
+    enum Compression { None, LowQuality, NormalQuality, HighQuality }
 
     // A set of bake options. Used both as the global default and as a
     // per-asset override.
@@ -18,20 +21,16 @@ namespace GltfTexBake
     {
         public bool enabled;
         public int maxSize;                          // longest-edge clamp; 0 = no downscale
-        public CompressionMode mode;
-        public TextureCompressionQuality quality;
-        public MipmapMode mipmaps;
-        public int minSize;                          // skip baking at or below this longest edge
+        public Compression compression;
+        public bool forceTrilinear;                  // force FilterMode.Trilinear
 
         // Built-in fallback used when no settings asset exists.
         public static BakeProfile Default => new BakeProfile
         {
             enabled = true,
             maxSize = 1024,
-            mode = CompressionMode.Auto,
-            quality = TextureCompressionQuality.Normal,
-            mipmaps = MipmapMode.Follow,
-            minSize = 0
+            compression = Compression.NormalQuality,
+            forceTrilinear = false
         };
     }
 

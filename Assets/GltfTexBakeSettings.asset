@@ -14,21 +14,52 @@ MonoBehaviour:
   m_EditorClassIdentifier: GltfTexBake.Editor::GltfTexBake.GltfTexBakeSettings
   defaults:
     enabled: 1
-    maxSize: 512
-    mode: 0
-    quality: 50
-    mipmaps: 0
-    minSize: 0
+    maxSize: 1024
+    compression: 2
+    forceTrilinear: 1
   entries:
   - glbGuid: 32386711e0b574a63a06e5b37d15d381
-    glbPath: Assets/Drone.glb
-    useCustom: 1
+    glbPath: Assets/Models/Drone.glb
+    useCustom: 0
     overrides:
       enabled: 1
       maxSize: 256
-      mode: 0
-      quality: 50
-      mipmaps: 0
-      minSize: 0
-    lastSummary: '3 tex: 2048x2048->512x512 DXT1; 2048x2048->512x512 DXT1; 2048x2048->512x512
-      DXT1'
+      compression: 2
+      forceTrilinear: 0
+    lastSummary: '3 tex: 1024x1024 DXT1; 1024x1024 DXT1; 1024x1024 DXT1'
+  - glbGuid: 6ccebd4a102304d90a13dd4281602283
+    glbPath: Assets/Models/Log.glb
+    useCustom: 0
+    overrides:
+      enabled: 1
+      maxSize: 1024
+      compression: 2
+      forceTrilinear: 1
+    lastSummary: '3 tex: 1024x1024 DXT1; 1024x1024 DXT1; 1024x1024 DXT1'
+  - glbGuid: 013d7aff037f24c30967f00796a978d7
+    glbPath: Assets/Models/Rock_Assets/Rock.glb
+    useCustom: 0
+    overrides:
+      enabled: 1
+      maxSize: 1024
+      compression: 2
+      forceTrilinear: 1
+    lastSummary: '3 tex: 1024x1024 DXT1; 1024x1024 DXT1; 1024x1024 DXT1'
+  - glbGuid: f5570d69ea96e4955947ece12ca910f5
+    glbPath: Assets/Models/Barrel.glb
+    useCustom: 0
+    overrides:
+      enabled: 1
+      maxSize: 1024
+      compression: 2
+      forceTrilinear: 1
+    lastSummary: '3 tex: 1024x1024 DXT1; 1024x1024 DXT1; 1024x1024 DXT1'
+  - glbGuid: 32966b9b95b0c46519d72876b8ac0177
+    glbPath: Assets/Models/Crate.glb
+    useCustom: 0
+    overrides:
+      enabled: 1
+      maxSize: 1024
+      compression: 2
+      forceTrilinear: 1
+    lastSummary: '3 tex: 1024x1024 DXT1; 1024x1024 DXT1; 1024x1024 DXT1'
