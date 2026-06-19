@@ -45,37 +45,19 @@ namespace GltfTexBake
         public string lastSummary;   // informational, e.g. "3 tex -> DXT1 @1024"
     }
 
-    // Global, editor-only settings asset. Lives at a fixed path so the import
-    // add-on can find it without a reference.
-    class GltfTexBakeSettings : ScriptableObject
+    // Global, editor-only settings stored under ProjectSettings/ and surfaced
+    // in the Project Settings window (see GltfTexBakeSettingsProvider).
+    [FilePath("ProjectSettings/GltfTexBakeSettings.asset", FilePathAttribute.Location.ProjectFolder)]
+    class GltfTexBakeSettings : ScriptableSingleton<GltfTexBakeSettings>
     {
-        public const string AssetPath = "Assets/Editor/GltfTexBake/GltfTexBakeSettings.asset";
-
         [SerializeField] BakeProfile defaults = BakeProfile.Default;
         [SerializeField] List<Entry> entries = new List<Entry>();
 
         public BakeProfile Defaults { get => defaults; set => defaults = value; }
         public List<Entry> Entries => entries;
 
-        static GltfTexBakeSettings s_Instance;
-
-        // Returns the asset if one exists anywhere in the project, otherwise
-        // null. Located by type so the user can freely move/rename it. Never
-        // creates the asset implicitly: asset creation during import is unsafe.
-        public static GltfTexBakeSettings Instance
-        {
-            get
-            {
-                if (s_Instance == null)
-                {
-                    var guids = AssetDatabase.FindAssets("t:GltfTexBakeSettings");
-                    if (guids.Length > 0)
-                        s_Instance = AssetDatabase.LoadAssetAtPath<GltfTexBakeSettings>(
-                            AssetDatabase.GUIDToAssetPath(guids[0]));
-                }
-                return s_Instance;
-            }
-        }
+        // Persist to the ProjectSettings/ file.
+        public void Persist() => Save(true);
 
         // Effective profile for a given glTF asset GUID.
         public BakeProfile Resolve(string guid)

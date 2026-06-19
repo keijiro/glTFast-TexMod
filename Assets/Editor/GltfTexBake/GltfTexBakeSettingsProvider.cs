@@ -3,37 +3,35 @@ using UnityEngine;
 
 namespace GltfTexBake
 {
-    [CustomEditor(typeof(GltfTexBakeSettings))]
-    class GltfTexBakeSettingsEditor : Editor
+    // Surfaces the settings in Project Settings > glTF Texture Bake.
+    static class GltfTexBakeSettingsProvider
     {
-        [MenuItem("Assets/Create/glTF Texture Bake Settings", priority = 300)]
-        static void CreateSettings()
+        [SettingsProvider]
+        static SettingsProvider Create()
         {
-            var existing = GltfTexBakeSettings.Instance;
-            if (existing != null)
+            return new SettingsProvider("Project/glTF Texture Bake", SettingsScope.Project)
             {
-                Selection.activeObject = existing;
-                EditorGUIUtility.PingObject(existing);
-                return;
-            }
-            var asset = CreateInstance<GltfTexBakeSettings>();
-            AssetDatabase.CreateAsset(asset, GltfTexBakeSettings.AssetPath);
-            AssetDatabase.SaveAssets();
-            Selection.activeObject = asset;
-            EditorGUIUtility.PingObject(asset);
+                label = "glTF Texture Bake",
+                guiHandler = OnGUI,
+                keywords = new[] { "glTF", "glb", "texture", "compression", "bake", "trilinear", "downscale" }
+            };
         }
 
-        public override void OnInspectorGUI()
+        static SerializedObject s_So;
+
+        static void OnGUI(string searchContext)
         {
-            serializedObject.Update();
+            if (s_So == null || s_So.targetObject == null)
+                s_So = new SerializedObject(GltfTexBakeSettings.instance);
+            s_So.Update();
 
             EditorGUILayout.LabelField("Defaults", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("defaults"), true);
+            EditorGUILayout.PropertyField(s_So.FindProperty("defaults"), true);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Imported glTF Assets", EditorStyles.boldLabel);
 
-            var entries = serializedObject.FindProperty("entries");
+            var entries = s_So.FindProperty("entries");
             if (entries.arraySize == 0)
                 EditorGUILayout.HelpBox("No glTF assets imported yet. Import a .glb/.gltf to populate this list.", MessageType.Info);
 
@@ -44,7 +42,8 @@ namespace GltfTexBake
             if (GUILayout.Button("Apply & Reimport All", GUILayout.Height(28)))
                 ReimportAll(entries);
 
-            serializedObject.ApplyModifiedProperties();
+            if (s_So.ApplyModifiedProperties())
+                GltfTexBakeSettings.instance.Persist();
         }
 
         static void DrawEntry(SerializedProperty entry)

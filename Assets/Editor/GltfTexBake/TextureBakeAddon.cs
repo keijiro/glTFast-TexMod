@@ -150,10 +150,8 @@ namespace GltfTexBake
             // the import worker context; degrade gracefully to built-in defaults.
             try
             {
-                var settings = GltfTexBakeSettings.Instance;
-                if (settings == null) return BakeProfile.Default;
                 var guid = AssetDatabase.AssetPathToGUID(GltfTexBakeImportTracker.CurrentGlbPath ?? string.Empty);
-                return settings.Resolve(guid);
+                return GltfTexBakeSettings.instance.Resolve(guid);
             }
             catch (System.Exception e)
             {

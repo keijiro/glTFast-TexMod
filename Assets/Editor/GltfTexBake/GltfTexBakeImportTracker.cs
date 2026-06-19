@@ -18,8 +18,6 @@ namespace GltfTexBake
         [System.ThreadStatic] static string s_CurrentGlbPath;
         public static string CurrentGlbPath => s_CurrentGlbPath;
 
-        static bool s_Flushing;
-
         static bool IsGltf(string path) =>
             path.EndsWith(".glb", System.StringComparison.OrdinalIgnoreCase) ||
             path.EndsWith(".gltf", System.StringComparison.OrdinalIgnoreCase);
@@ -35,8 +33,6 @@ namespace GltfTexBake
             string[] movedAssets,
             string[] movedFromAssetPaths)
         {
-            if (s_Flushing) return;
-
             var pending = new List<(string guid, string path)>();
             foreach (var path in importedAssets)
             {
@@ -48,24 +44,15 @@ namespace GltfTexBake
 
             if (pending.Count == 0) return;
 
-            // Defer the settings-asset edit until after the import completes.
+            // The settings live in ProjectSettings/ (not the AssetDatabase), so
+            // editing/saving them does not trigger another import; no reentrancy
+            // guard is needed. delayCall keeps the edit off the import callback.
             EditorApplication.delayCall += () =>
             {
-                var settings = GltfTexBakeSettings.Instance;
-                Debug.Log($"[GltfTexBake] postprocess: {pending.Count} glTF imported, settings={(settings != null)}");
-                if (settings == null) return; // no settings asset yet; nothing to record
-
-                s_Flushing = true;
-                try
-                {
-                    foreach (var (guid, path) in pending)
-                        settings.RegisterImport(guid, path, BuildSummary(path));
-                    EditorUtility.SetDirty(settings);
-                }
-                finally
-                {
-                    s_Flushing = false;
-                }
+                var settings = GltfTexBakeSettings.instance;
+                foreach (var (guid, path) in pending)
+                    settings.RegisterImport(guid, path, BuildSummary(path));
+                settings.Persist();
             };
         }
 
