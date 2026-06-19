@@ -1,6 +1,6 @@
 {
-    "name": "GltfTexBake.Editor",
-    "rootNamespace": "GltfTexBake",
+    "name": "glTFastTweaks.Editor",
+    "rootNamespace": "GLTFastTweaks",
     "references": [
         "glTFast",
         "Unity.Collections"

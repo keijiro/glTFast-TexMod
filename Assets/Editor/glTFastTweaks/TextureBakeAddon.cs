@@ -8,7 +8,7 @@ using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
 
-namespace GltfTexBake
+namespace GLTFastTweaks
 {
     // Intercepts embedded glTF PNG/JPEG textures on import and bakes them
     // (downscale + GPU compression) according to the per-asset settings
@@ -139,7 +139,7 @@ namespace GltfTexBake
             if (profile.forceTrilinear)
                 dst.filterMode = FilterMode.Trilinear;
 
-            Debug.Log($"[GltfTexBake] {sw}x{sh}->{tw}x{th} {formatLabel} (linear={linear}, mips={wantMips}, trilinear={profile.forceTrilinear})");
+            Debug.Log($"[glTFastTweaks] {sw}x{sh}->{tw}x{th} {formatLabel} (linear={linear}, mips={wantMips}, trilinear={profile.forceTrilinear})");
 
             return Task.FromResult(new ImageResult(dst));
         }
@@ -150,12 +150,12 @@ namespace GltfTexBake
             // the import worker context; degrade gracefully to built-in defaults.
             try
             {
-                var guid = AssetDatabase.AssetPathToGUID(GltfTexBakeImportTracker.CurrentGlbPath ?? string.Empty);
-                return GltfTexBakeSettings.instance.Resolve(guid);
+                var guid = AssetDatabase.AssetPathToGUID(TextureBakeImportTracker.CurrentGlbPath ?? string.Empty);
+                return TextureBakeSettings.instance.Resolve(guid);
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning($"[GltfTexBake] Falling back to default profile: {e.Message}");
+                Debug.LogWarning($"[glTFastTweaks] Falling back to default profile: {e.Message}");
                 return BakeProfile.Default;
             }
         }

@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eae338eaaa76f4c90bf0c347ad5337a9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: GltfTexBake.Editor::GltfTexBake.GltfTexBakeSettings
+  m_EditorClassIdentifier: glTFastTweaks.Editor::GLTFastTweaks.TextureBakeSettings
   defaults:
     enabled: 1
     maxSize: 1024

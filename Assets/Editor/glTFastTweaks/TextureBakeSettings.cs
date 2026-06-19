@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace GltfTexBake
+namespace GLTFastTweaks
 {
     // GPU compression level. Mirrors Unity's TextureImporterCompression levels
     // but with the labels requested for this tool. Maps to a desktop BC format
@@ -47,8 +47,8 @@ namespace GltfTexBake
 
     // Global, editor-only settings stored under ProjectSettings/ and surfaced
     // in the Project Settings window (see GltfTexBakeSettingsProvider).
-    [FilePath("ProjectSettings/GltfTexBakeSettings.asset", FilePathAttribute.Location.ProjectFolder)]
-    class GltfTexBakeSettings : ScriptableSingleton<GltfTexBakeSettings>
+    [FilePath("ProjectSettings/glTFastTweaksSettings.asset", FilePathAttribute.Location.ProjectFolder)]
+    class TextureBakeSettings : ScriptableSingleton<TextureBakeSettings>
     {
         [SerializeField] BakeProfile defaults = BakeProfile.Default;
         [SerializeField] List<Entry> entries = new List<Entry>();

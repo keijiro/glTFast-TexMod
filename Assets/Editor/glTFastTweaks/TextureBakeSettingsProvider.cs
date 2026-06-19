@@ -1,10 +1,10 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace GltfTexBake
+namespace GLTFastTweaks
 {
     // Surfaces the settings in Project Settings > glTF Texture Bake.
-    static class GltfTexBakeSettingsProvider
+    static class TextureBakeSettingsProvider
     {
         [SettingsProvider]
         static SettingsProvider Create()
@@ -22,7 +22,7 @@ namespace GltfTexBake
         static void OnGUI(string searchContext)
         {
             if (s_So == null || s_So.targetObject == null)
-                s_So = new SerializedObject(GltfTexBakeSettings.instance);
+                s_So = new SerializedObject(TextureBakeSettings.instance);
             s_So.Update();
 
             EditorGUILayout.LabelField("Defaults", EditorStyles.boldLabel);
@@ -43,7 +43,7 @@ namespace GltfTexBake
                 ReimportAll(entries);
 
             if (s_So.ApplyModifiedProperties())
-                GltfTexBakeSettings.instance.Persist();
+                TextureBakeSettings.instance.Persist();
         }
 
         static void DrawEntry(SerializedProperty entry)
