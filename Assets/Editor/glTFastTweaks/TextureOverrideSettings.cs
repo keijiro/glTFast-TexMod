@@ -7,17 +7,17 @@ namespace GLTFastTweaks
 {
     // GPU compression level. Mirrors Unity's TextureImporterCompression levels
     // but with the labels requested for this tool. Maps to a desktop BC format
-    // and compression quality in TextureBakeAddon.
+    // and compression quality in TextureOverrideAddon.
     //   None          -> uncompressed (RGBA32)
     //   LowQuality    -> DXT1/DXT5, Fast quality
     //   NormalQuality -> DXT1/DXT5, Normal quality
     //   HighQuality   -> BC7, Best quality
     enum Compression { None, LowQuality, NormalQuality, HighQuality }
 
-    // A set of bake options. Used both as the global default and as a
+    // A set of texture override options. Used both as the global default and as a
     // per-asset override.
     [Serializable]
-    struct BakeProfile
+    struct TextureOverride
     {
         public bool enabled;
         public int maxSize;                          // longest-edge clamp; 0 = no downscale
@@ -25,7 +25,7 @@ namespace GLTFastTweaks
         public bool forceTrilinear;                  // force FilterMode.Trilinear
 
         // Built-in fallback used when no settings asset exists.
-        public static BakeProfile Default => new BakeProfile
+        public static TextureOverride Default => new TextureOverride
         {
             enabled = true,
             maxSize = 1024,
@@ -41,26 +41,26 @@ namespace GLTFastTweaks
         public string glbGuid;
         public string glbPath;       // cached for display; resolved from GUID on use
         public bool useCustom;       // false = use the global defaults
-        public BakeProfile overrides;
+        public TextureOverride overrides;
         public string lastSummary;   // informational, e.g. "3 tex -> DXT1 @1024"
     }
 
     // Global, editor-only settings stored under ProjectSettings/ and surfaced
-    // in the Project Settings window (see TextureBakeSettingsProvider).
+    // in the Project Settings window (see TextureOverrideSettingsProvider).
     [FilePath("ProjectSettings/glTFastTweaksSettings.asset", FilePathAttribute.Location.ProjectFolder)]
-    class TextureBakeSettings : ScriptableSingleton<TextureBakeSettings>
+    class TextureOverrideSettings : ScriptableSingleton<TextureOverrideSettings>
     {
-        [SerializeField] BakeProfile defaults = BakeProfile.Default;
+        [SerializeField] TextureOverride defaults = TextureOverride.Default;
         [SerializeField] List<Entry> entries = new List<Entry>();
 
-        public BakeProfile Defaults { get => defaults; set => defaults = value; }
+        public TextureOverride Defaults { get => defaults; set => defaults = value; }
         public List<Entry> Entries => entries;
 
         // Persist to the ProjectSettings/ file.
         public void Persist() => Save(true);
 
-        // Effective profile for a given glTF asset GUID.
-        public BakeProfile Resolve(string guid)
+        // Effective override for a given glTF asset GUID.
+        public TextureOverride Resolve(string guid)
         {
             var entry = FindEntry(guid);
             return entry != null && entry.useCustom ? entry.overrides : defaults;

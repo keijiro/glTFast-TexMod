@@ -3,17 +3,17 @@ using UnityEngine;
 
 namespace GLTFastTweaks
 {
-    // Surfaces the settings in Project Settings > glTF Texture Bake.
-    static class TextureBakeSettingsProvider
+    // Surfaces the settings in Project Settings > glTFast Tweaks > Texture Overrides.
+    static class TextureOverrideSettingsProvider
     {
         [SettingsProvider]
         static SettingsProvider Create()
         {
-            return new SettingsProvider("Project/glTF Texture Bake", SettingsScope.Project)
+            return new SettingsProvider("Project/glTFast Tweaks", SettingsScope.Project)
             {
-                label = "glTF Texture Bake",
+                label = "glTFast Tweaks",
                 guiHandler = OnGUI,
-                keywords = new[] { "glTF", "glb", "texture", "compression", "bake", "trilinear", "downscale" }
+                keywords = new[] { "glTF", "glb", "tweaks", "texture", "override", "compression", "trilinear", "downscale" }
             };
         }
 
@@ -22,8 +22,12 @@ namespace GLTFastTweaks
         static void OnGUI(string searchContext)
         {
             if (s_So == null || s_So.targetObject == null)
-                s_So = new SerializedObject(TextureBakeSettings.instance);
+                s_So = new SerializedObject(TextureOverrideSettings.instance);
             s_So.Update();
+
+            // Feature section (one of several glTFast tweaks hosted on this page).
+            EditorGUILayout.LabelField("Texture Overrides", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
 
             EditorGUILayout.LabelField("Defaults", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(s_So.FindProperty("defaults"), true);
@@ -42,8 +46,10 @@ namespace GLTFastTweaks
             if (GUILayout.Button("Apply & Reimport All", GUILayout.Height(28)))
                 ReimportAll(entries);
 
+            EditorGUI.indentLevel--;
+
             if (s_So.ApplyModifiedProperties())
-                TextureBakeSettings.instance.Persist();
+                TextureOverrideSettings.instance.Persist();
         }
 
         static void DrawEntry(SerializedProperty entry)

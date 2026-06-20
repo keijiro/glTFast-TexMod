@@ -10,21 +10,21 @@ using UnityEngine;
 
 namespace GLTFastTweaks
 {
-    // Intercepts embedded glTF PNG/JPEG textures on import and bakes them
+    // Intercepts embedded glTF PNG/JPEG textures on import and rewrites them
     // (downscale + GPU compression) according to the per-asset settings
-    // resolved from TextureBakeSettings.
-    static class TextureBakeRegistration
+    // resolved from TextureOverrideSettings.
+    static class TextureOverrideRegistration
     {
         [InitializeOnLoadMethod]
         static void Register()
         {
-            ImportAddonRegistry.RegisterImportAddon(new TextureBakeAddon());
+            ImportAddonRegistry.RegisterImportAddon(new TextureOverrideAddon());
         }
     }
 
-    class TextureBakeAddon : ImportAddon<TextureBakeAddonInstance> { }
+    class TextureOverrideAddon : ImportAddon<TextureOverrideAddonInstance> { }
 
-    class TextureBakeAddonInstance : ImportAddonInstance, ITextureImageLoader
+    class TextureOverrideAddonInstance : ImportAddonInstance, ITextureImageLoader
     {
         // --- ImportAddonInstance -------------------------------------------
         public override bool SupportsGltfExtension(string extensionName) => false;
@@ -74,9 +74,9 @@ namespace GLTFastTweaks
             int sw = src.width, sh = src.height;
             var longest = Mathf.Max(sw, sh);
 
-            var bake = profile.enabled;
-            var doDownscale = bake && profile.maxSize > 0 && longest > profile.maxSize;
-            var doCompress = bake && profile.compression != Compression.None;
+            var apply = profile.enabled;
+            var doDownscale = apply && profile.maxSize > 0 && longest > profile.maxSize;
+            var doCompress = apply && profile.compression != Compression.None;
 
             // 2. Target size (rounded to a multiple of 4 when compressing).
             int tw = sw, th = sh;
@@ -144,19 +144,19 @@ namespace GLTFastTweaks
             return Task.FromResult(new ImageResult(dst));
         }
 
-        static BakeProfile ResolveProfile()
+        static TextureOverride ResolveProfile()
         {
             // AssetDatabase access during import can be restricted depending on
             // the import worker context; degrade gracefully to built-in defaults.
             try
             {
-                var guid = AssetDatabase.AssetPathToGUID(TextureBakeImportTracker.CurrentGlbPath ?? string.Empty);
-                return TextureBakeSettings.instance.Resolve(guid);
+                var guid = AssetDatabase.AssetPathToGUID(TextureOverrideImportTracker.CurrentGlbPath ?? string.Empty);
+                return TextureOverrideSettings.instance.Resolve(guid);
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning($"[glTFastTweaks] Falling back to default profile: {e.Message}");
-                return BakeProfile.Default;
+                Debug.LogWarning($"[glTFastTweaks] Falling back to default override: {e.Message}");
+                return TextureOverride.Default;
             }
         }
 
