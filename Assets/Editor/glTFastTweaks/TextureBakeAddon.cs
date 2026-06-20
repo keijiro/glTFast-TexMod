@@ -12,7 +12,7 @@ namespace GLTFastTweaks
 {
     // Intercepts embedded glTF PNG/JPEG textures on import and bakes them
     // (downscale + GPU compression) according to the per-asset settings
-    // resolved from GltfTexBakeSettings.
+    // resolved from TextureBakeSettings.
     static class TextureBakeRegistration
     {
         [InitializeOnLoadMethod]

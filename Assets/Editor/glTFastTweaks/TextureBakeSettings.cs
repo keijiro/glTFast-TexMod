@@ -46,7 +46,7 @@ namespace GLTFastTweaks
     }
 
     // Global, editor-only settings stored under ProjectSettings/ and surfaced
-    // in the Project Settings window (see GltfTexBakeSettingsProvider).
+    // in the Project Settings window (see TextureBakeSettingsProvider).
     [FilePath("ProjectSettings/glTFastTweaksSettings.asset", FilePathAttribute.Location.ProjectFolder)]
     class TextureBakeSettings : ScriptableSingleton<TextureBakeSettings>
     {
