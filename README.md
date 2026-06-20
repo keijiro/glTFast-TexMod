@@ -1,5 +1,7 @@
 # glTFast Tweaks
 
+<p><img width="831" height="299" alt="Screenshot 2026-06-20 at 10 13 24 PM" src="https://github.com/user-attachments/assets/456e4e3a-0ebc-4253-8d08-dc35d67ca877" /></p>
+
 **glTFast Tweaks** is a Unity Editor extension that customizes how the
 [glTFast] importer handles textures, letting you override texture import
 settings per glTF asset directly from Project Settings. It's especially
