@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-06-20
+
+### Added
+
+- Added a "Scan for glTF Assets" button to rebuild the asset list on demand.
+
+### Changed
+
+- Built the asset list from a full project scan instead of recording imports.
+- Removed entries whose asset no longer exists during a scan.
+- Disabled texture overrides by default.
+
 ## [1.0.0] - 2026-06-20
 
 ### Added
