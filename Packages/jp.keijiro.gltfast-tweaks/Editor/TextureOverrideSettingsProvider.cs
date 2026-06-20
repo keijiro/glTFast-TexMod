@@ -68,7 +68,7 @@ namespace GLTFastTweaks
             var emptyHelp = new HelpBox(
                 "No glTF assets imported yet. Import a .glb/.gltf to populate this list.",
                 HelpBoxMessageType.Info);
-            body.Add(emptyHelp);
+            emptyHelp.style.marginTop = 6;
 
             var list = new ListView
             {
@@ -86,6 +86,9 @@ namespace GLTFastTweaks
                 else BindRow(so, element, entryIndex);
             };
             body.Add(list);
+
+            // Shown below the list when there are no imported assets yet.
+            body.Add(emptyHelp);
 
             var reimportAll = new Button(() => ReimportAll(so.FindProperty("entries")))
             { text = "Reimport All" };

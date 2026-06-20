@@ -29,7 +29,7 @@ namespace GLTFastTweaks
         // Built-in fallback used when no settings asset exists.
         public static TextureOverride Default => new TextureOverride
         {
-            enabled = true,
+            enabled = false,
             maxSize = 1024,
             compression = Compression.NormalQuality,
             filterMode = FilterMode.Trilinear
