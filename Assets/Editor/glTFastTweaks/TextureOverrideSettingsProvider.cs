@@ -17,7 +17,7 @@ namespace GLTFastTweaks
     static class TextureOverrideSettingsProvider
     {
         // Column widths for the per-asset override table (shared by header + rows).
-        const float kEnabled = 24, kMax = 72, kComp = 130, kTri = 62, kBtn = 78;
+        const float kEnabled = 24, kMax = 72, kComp = 130, kFilter = 96, kBtn = 78;
         const float kRowHeight = 22;
 
         [SettingsProvider]
@@ -135,7 +135,7 @@ namespace GLTFastTweaks
             header.Add(HeaderCell("File", 0, grow: true));
             header.Add(HeaderCell("Size", kMax));
             header.Add(HeaderCell("Compression", kComp));
-            header.Add(HeaderCell("Trilinear", kTri));
+            header.Add(HeaderCell("Filter", kFilter));
             header.Add(HeaderCell("", kBtn));
             return header;
         }
@@ -176,7 +176,7 @@ namespace GLTFastTweaks
 
             row.Add(Col(new IntegerField { name = "max" }, kMax));
             row.Add(Col(new EnumField(Compression.NormalQuality) { name = "comp" }, kComp));
-            row.Add(Col(new Toggle { name = "tri" }, kTri));
+            row.Add(Col(new EnumField(FilterMode.Trilinear) { name = "filter" }, kFilter));
 
             var reimport = Col(new Button { text = "Reimport", name = "reimport" }, kBtn);
             // userData holds the resolved asset path, refreshed in BindRow.
@@ -199,7 +199,7 @@ namespace GLTFastTweaks
             enabled.BindProperty(defaults.FindPropertyRelative("enabled"));
             row.Q<IntegerField>("max").BindProperty(defaults.FindPropertyRelative("maxSize"));
             row.Q<EnumField>("comp").BindProperty(defaults.FindPropertyRelative("compression"));
-            row.Q<Toggle>("tri").BindProperty(defaults.FindPropertyRelative("forceTrilinear"));
+            row.Q<EnumField>("filter").BindProperty(defaults.FindPropertyRelative("filterMode"));
 
             var file = row.Q<Label>("file");
             file.text = "(Defaults)";
@@ -221,7 +221,7 @@ namespace GLTFastTweaks
             enabled.BindProperty(overrides.FindPropertyRelative("enabled"));
             row.Q<IntegerField>("max").BindProperty(overrides.FindPropertyRelative("maxSize"));
             row.Q<EnumField>("comp").BindProperty(overrides.FindPropertyRelative("compression"));
-            row.Q<Toggle>("tri").BindProperty(overrides.FindPropertyRelative("forceTrilinear"));
+            row.Q<EnumField>("filter").BindProperty(overrides.FindPropertyRelative("filterMode"));
 
             var path = GetEntryPath(entry);
             var summary = entry.FindPropertyRelative("lastSummary").stringValue;
@@ -245,7 +245,7 @@ namespace GLTFastTweaks
         {
             row.Q<IntegerField>("max").SetEnabled(enabled);
             row.Q<EnumField>("comp").SetEnabled(enabled);
-            row.Q<Toggle>("tri").SetEnabled(enabled);
+            row.Q<EnumField>("filter").SetEnabled(enabled);
         }
 
         static T Col<T>(T element, float width) where T : VisualElement

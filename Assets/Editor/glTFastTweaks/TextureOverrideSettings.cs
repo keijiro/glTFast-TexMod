@@ -24,7 +24,7 @@ namespace GLTFastTweaks
         public bool enabled;
         public int maxSize;                          // longest-edge clamp; 0 = no downscale
         public Compression compression;
-        public bool forceTrilinear;                  // force FilterMode.Trilinear
+        public FilterMode filterMode;                // texture filtering mode
 
         // Built-in fallback used when no settings asset exists.
         public static TextureOverride Default => new TextureOverride
@@ -32,7 +32,7 @@ namespace GLTFastTweaks
             enabled = true,
             maxSize = 1024,
             compression = Compression.NormalQuality,
-            forceTrilinear = false
+            filterMode = FilterMode.Trilinear
         };
     }
 

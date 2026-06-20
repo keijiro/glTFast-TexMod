@@ -16,7 +16,7 @@ MonoBehaviour:
     enabled: 1
     maxSize: 1024
     compression: 2
-    forceTrilinear: 0
+    filterMode: 2
   entries:
   - glbGuid: 32386711e0b574a63a06e5b37d15d381
     glbPath: Assets/Models/Drone.glb
@@ -24,7 +24,7 @@ MonoBehaviour:
       enabled: 0
       maxSize: 256
       compression: 2
-      forceTrilinear: 0
+      filterMode: 2
     lastSummary: '3 tex: 1024x1024 DXT1; 1024x1024 DXT1; 1024x1024 DXT1'
   - glbGuid: f5570d69ea96e4955947ece12ca910f5
     glbPath: Assets/Models/Barrel.glb
@@ -32,7 +32,7 @@ MonoBehaviour:
       enabled: 0
       maxSize: 256
       compression: 2
-      forceTrilinear: 0
+      filterMode: 2
     lastSummary: '3 tex: 1024x1024 DXT1; 1024x1024 DXT1; 1024x1024 DXT1'
   - glbGuid: 32966b9b95b0c46519d72876b8ac0177
     glbPath: Assets/Models/Crate.glb
@@ -40,5 +40,5 @@ MonoBehaviour:
       enabled: 0
       maxSize: 256
       compression: 2
-      forceTrilinear: 0
+      filterMode: 2
     lastSummary: '3 tex: 1024x1024 DXT1; 1024x1024 DXT1; 1024x1024 DXT1'
