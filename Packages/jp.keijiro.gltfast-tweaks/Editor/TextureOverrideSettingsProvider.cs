@@ -17,7 +17,7 @@ namespace GLTFastTweaks
     static class TextureOverrideSettingsProvider
     {
         // Column widths for the per-asset override table (shared by header + rows).
-        const float kEnabled = 24, kMax = 72, kComp = 130, kFilter = 96, kBtn = 78;
+        const float kEnabled = 24, kMax = 56, kComp = 110, kFilter = 76, kBtn = 78;
         const float kRowHeight = 22;
 
         // Set once the project has been scanned this editor session.
@@ -74,11 +74,6 @@ namespace GLTFastTweaks
             // ListView (index sentinel -1), so it renders identically to the rest.
             body.Add(BuildColumnHeader());
 
-            var emptyHelp = new HelpBox(
-                "No glTF assets imported yet. Import a .glb/.gltf to populate this list.",
-                HelpBoxMessageType.Info);
-            emptyHelp.style.marginTop = 6;
-
             var list = new ListView
             {
                 virtualizationMethod = CollectionVirtualizationMethod.FixedHeight,
@@ -95,9 +90,6 @@ namespace GLTFastTweaks
                 else BindRow(so, element, entryIndex);
             };
             body.Add(list);
-
-            // Shown below the list when there are no imported assets yet.
-            body.Add(emptyHelp);
 
             // Action buttons (right-aligned).
             var buttons = new VisualElement
@@ -123,7 +115,6 @@ namespace GLTFastTweaks
                 list.itemsSource = source;
                 list.Rebuild();
 
-                emptyHelp.style.display = count == 0 ? DisplayStyle.Flex : DisplayStyle.None;
                 list.style.height = Mathf.Clamp(source.Count, 1, 12) * kRowHeight + 6;
             }
 
@@ -185,13 +176,29 @@ namespace GLTFastTweaks
             enabled.RegisterValueChangedCallback(e => SetValueColumnsEnabled(row, e.newValue));
             row.Add(enabled);
 
-            var file = new Label { name = "file" };
+            // File column: file name plus a small, dimmed directory path.
+            var file = new VisualElement { name = "file" };
             file.style.flexGrow = 1;
             file.style.minWidth = 120;
             file.style.marginRight = 4;
-            file.style.whiteSpace = WhiteSpace.NoWrap;
+            file.style.flexDirection = FlexDirection.Row;
+            file.style.alignItems = Align.Center;
             file.style.overflow = Overflow.Hidden;
-            file.style.textOverflow = TextOverflow.Ellipsis;
+
+            var fileName = new Label { name = "fileName" };
+            fileName.style.flexShrink = 0;
+            fileName.style.whiteSpace = WhiteSpace.NoWrap;
+            file.Add(fileName);
+
+            var fileDir = new Label { name = "fileDir" };
+            fileDir.style.marginLeft = 6;
+            fileDir.style.fontSize = 10;
+            fileDir.style.opacity = 0.5f;
+            fileDir.style.whiteSpace = WhiteSpace.NoWrap;
+            fileDir.style.overflow = Overflow.Hidden;
+            fileDir.style.textOverflow = TextOverflow.Ellipsis;
+            file.Add(fileDir);
+
             row.Add(file);
 
             row.Add(Col(new IntegerField { name = "max" }, kMax));
@@ -221,10 +228,9 @@ namespace GLTFastTweaks
             row.Q<EnumField>("comp").BindProperty(defaults.FindPropertyRelative("compression"));
             row.Q<EnumField>("filter").BindProperty(defaults.FindPropertyRelative("filterMode"));
 
-            var file = row.Q<Label>("file");
-            file.text = "(Defaults)";
-            file.style.unityFontStyleAndWeight = FontStyle.Normal;
-            file.tooltip = "Applied to every asset whose switch is off.";
+            row.Q<Label>("fileName").text = "(Defaults)";
+            row.Q<Label>("fileDir").text = "";
+            row.Q<VisualElement>("file").tooltip = null;
 
             // The Defaults row has no single asset to reimport.
             row.Q<Button>("reimport").style.visibility = Visibility.Hidden;
@@ -244,11 +250,9 @@ namespace GLTFastTweaks
             row.Q<EnumField>("filter").BindProperty(overrides.FindPropertyRelative("filterMode"));
 
             var path = GetEntryPath(entry);
-            var summary = entry.FindPropertyRelative("lastSummary").stringValue;
-            var file = row.Q<Label>("file");
-            file.style.unityFontStyleAndWeight = FontStyle.Normal;   // reset (row recycled from Defaults)
-            file.text = string.IsNullOrEmpty(path) ? "(missing)" : Path.GetFileName(path);
-            file.tooltip = string.IsNullOrEmpty(summary) ? path : path + "\n" + summary;
+            row.Q<Label>("fileName").text = string.IsNullOrEmpty(path) ? "(missing)" : Path.GetFileName(path);
+            row.Q<Label>("fileDir").text = string.IsNullOrEmpty(path) ? "" : Path.GetDirectoryName(path);
+            row.Q<VisualElement>("file").tooltip = null;   // clear (row recycled from Defaults)
 
             row.userData = path;
             var reimport = row.Q<Button>("reimport");

@@ -119,16 +119,10 @@ namespace GLTFastTweaks
 
             // 4. GPU-compress (editor). Format and quality are derived from the
             //    standard TextureImporterCompression level.
-            string formatLabel;
             if (doCompress)
             {
                 var format = SelectFormat(profile.compression, hasAlpha);
                 EditorUtility.CompressTexture(dst, format, SelectQuality(profile.compression));
-                formatLabel = format.ToString();
-            }
-            else
-            {
-                formatLabel = "RGBA32";
             }
             dst.Apply(false, !readable);
 
@@ -138,8 +132,6 @@ namespace GLTFastTweaks
             // here survives.
             if (apply)
                 dst.filterMode = profile.filterMode;
-
-            Debug.Log($"[glTFastTweaks] {sw}x{sh}->{tw}x{th} {formatLabel} (linear={linear}, mips={wantMips}, filter={(apply ? profile.filterMode.ToString() : "untouched")})");
 
             return Task.FromResult(new ImageResult(dst));
         }
@@ -153,9 +145,8 @@ namespace GLTFastTweaks
                 var guid = AssetDatabase.AssetPathToGUID(TextureOverrideImportTracker.CurrentGlbPath ?? string.Empty);
                 return TextureOverrideSettings.instance.Resolve(guid);
             }
-            catch (System.Exception e)
+            catch
             {
-                Debug.LogWarning($"[glTFastTweaks] Falling back to default override: {e.Message}");
                 return TextureOverride.Default;
             }
         }

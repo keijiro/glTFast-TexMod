@@ -43,7 +43,6 @@ namespace GLTFastTweaks
         public string glbGuid;
         public string glbPath;       // cached for display; resolved from GUID on use
         public TextureOverride overrides;   // overrides.enabled is the per-row switch
-        public string lastSummary;   // informational, e.g. "3 tex -> DXT1 @1024"
     }
 
     // Global, editor-only settings stored under ProjectSettings/ and surfaced
@@ -53,9 +52,6 @@ namespace GLTFastTweaks
     {
         [SerializeField] TextureOverride defaults = TextureOverride.Default;
         [SerializeField] List<Entry> entries = new List<Entry>();
-
-        public TextureOverride Defaults { get => defaults; set => defaults = value; }
-        public List<Entry> Entries => entries;
 
         // Persist to the ProjectSettings/ file.
         public void Persist() => Save(true);
@@ -83,13 +79,13 @@ namespace GLTFastTweaks
 
             entries.RemoveAll(e => !found.ContainsKey(e.glbGuid));
             foreach (var kv in found)
-                Register(kv.Key, kv.Value, BuildSummary(kv.Value));
+                Register(kv.Key, kv.Value);
 
             Persist();
         }
 
         // Adds or refreshes the entry for a glTF asset.
-        void Register(string guid, string path, string summary)
+        void Register(string guid, string path)
         {
             var entry = FindEntry(guid);
             if (entry == null)
@@ -102,7 +98,6 @@ namespace GLTFastTweaks
                 entries.Add(entry);
             }
             entry.glbPath = path;
-            entry.lastSummary = summary;
         }
 
         Entry FindEntry(string guid)
@@ -116,16 +111,5 @@ namespace GLTFastTweaks
         internal static bool IsGltf(string path) =>
             path.EndsWith(".glb", StringComparison.OrdinalIgnoreCase) ||
             path.EndsWith(".gltf", StringComparison.OrdinalIgnoreCase);
-
-        // Short summary of an asset's texture sub-assets (e.g. "3 tex: ...").
-        static string BuildSummary(string path)
-        {
-            var reps = AssetDatabase.LoadAllAssetRepresentationsAtPath(path);
-            var lines = new List<string>();
-            foreach (var rep in reps)
-                if (rep is Texture2D t)
-                    lines.Add($"{t.width}x{t.height} {t.format}");
-            return lines.Count > 0 ? $"{lines.Count} tex: {string.Join("; ", lines)}" : null;
-        }
     }
 }
