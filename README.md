@@ -1,6 +1,6 @@
 # glTFast Tweaks
 
-<p><img width="747" height="310" alt="Screenshot 2026-06-20 at 10 53 20 PM" src="https://github.com/user-attachments/assets/af5625b5-bda1-4320-8a5a-e7fd1bb74ae4" /></p>
+<p><img width="713" height="309" alt="Screenshot" src="https://github.com/user-attachments/assets/b3cc2676-b747-4544-a919-b54ab91cbecc" /></p>
 
 **glTFast Tweaks** is a Unity Editor extension that provides add-ons for the
 [glTFast] package.
